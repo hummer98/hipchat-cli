@@ -103,7 +103,7 @@ if [ $FORMAT == 'html' ]; then
 fi
 
 # replace bare URLs with real hyperlinks
-INPUT=$(echo -n "${INPUT}" | perl -p -e "s/(?<!href=\"|href=')((?:https?|ftp|mailto)\:\/\/[^ \n]*)/\<a href=\"\1\"\>\1\<\/a>/g")
+INPUT=$(echo -n "${INPUT}" | perl -p -e "s/(?<!href=\"|href='| src='| src=\")((?:https?|ftp|mailto)\:\/\/[^ \n]*)/\<a href=\"\1\"\>\1\<\/a>/g")
 
 # urlencode with perl
 if [ $API == 'v1' ]; then
@@ -121,12 +121,12 @@ fi
 
 # do the curl
 if [ $API == 'v2' ]; then
-  curl -sS \
+  curl -skS \
     -H 'Content-type: application/json' \
     -d "{\"color\":\"$COLOR\", \"message\":\"$INPUT\", \"message_format\":\"$FORMAT\", \"notify\":$NOTIFY}" \
     https://$HOST/v2/room/$ROOM_ID/notification?auth_token=$TOKEN
 else
-  curl -sS \
+  curl -skS \
     -d "auth_token=$TOKEN&room_id=$ROOM_ID&from=$FROM&color=$COLOR&message_format=$FORMAT&message=$INPUT&notify=$NOTIFY" \
     https://$HOST/v1/rooms/message
 fi
